@@ -1,0 +1,27 @@
+{
+  "name": "statsd-alerting-backend",
+  "version": "0.0.1",
+  "description": "A simple StatsD backend to send customizable alerts",
+  "keywords": ["statsd", "alerting", "slack", "email"],
+  "homepage": "https://github.com/joshgummersall/statsd-alerting-backend",
+  "bugs": {
+    "url": "https://github.com/joshgummersall/statsd-alerting-backend/issues",
+    "email": "josh@joshgummersall.me"
+  },
+  "license": "ISC",
+  "author": {
+    "name": "Josh Gummersall",
+    "email": "josh@joshgummersall.me",
+    "url": "http://joshgummersall.me"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshgummersall/statsd-alerting-backend.git"
+  },
+  "scripts": {},
+  "dependencies": {
+    "async": "^0.9.0",
+    "underscore": "^1.7.0"
+  }
+}
