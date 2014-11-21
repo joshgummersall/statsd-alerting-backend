@@ -1,8 +1,8 @@
 module.exports = class Alert
-  constructor: (@event, @config) ->
+  constructor: (@config) ->
 
-  body: ->
-    @event
+  sendEvent: (event) ->
+    console.log event
 
-  send: ->
-    console.log @body()
+  sendMetricsEvent: (event) ->
+    console.log event

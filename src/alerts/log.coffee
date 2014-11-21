@@ -1,5 +1,8 @@
 Alert = require './alert'
 
 module.exports = class LogAlert extends Alert
-  body: ->
-    "[#{@event.name}]: Dispatching event!"
+  sendEvent: (event) ->
+    console.log "[event]: #{JSON.stringify event}"
+
+  sendMetricsEvent: (event) ->
+    console.log "[metrics event]: #{JSON.stringify event}"

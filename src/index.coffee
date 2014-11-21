@@ -3,26 +3,34 @@ _ = require 'underscore'
 
 class AlertDistributor
   constructor: (@config) ->
+    # Register events to dispatch alerts for
     @events = @config.events or []
     @metrics = @config.metrics or []
-    @alertConfig =
-      slack: @config.slack or {}
-      email: @config.email or {}
-      log: @config.log or {}
 
-  dispatch: (event) ->
-    Alerts.build(event, @alertConfig).send()
+    # Build dispatchers for events
+    @dispatchers = {}
+    @dispatchers[type] = new klass @config[type] for type, klass of Alerts
 
+  dispatchEvent: (type, event) ->
+    return unless type of @dispatchers
+    @dispatchers[type].sendEvent event
+
+  dispatchMetricsEvent: (type, event) ->
+    return unless type of @dispatchers
+    @dispatchers[type].sendMetricsEvent event
+
+  # Parse out event data from StatsD packet
   parsePacket: (packet) ->
     for event in packet.toString().split('\n') or []
       [name, data] = event.split ':'
       [metric, type] = data.split '|'
       {name, metric, type}
 
+  # On each event forwarded from StatsD try to dispatch
   onPacket: (packet, rinfo) =>
     for {name, metric, type} in @parsePacket packet
       for event in @events when event.name is name
-        @dispatch _.extend event, {metric, type}
+        @dispatchEvent event.alert, _.extend event, {metric, type}
 
   # Extract metric comparison type and value from event options
   getMetricComparison: (event) ->
@@ -47,12 +55,13 @@ class AlertDistributor
 
   # Care about: greater than, less than, bigger than certain delta
   onFlush: (timestamp, metrics) =>
+    # Helper to extract a metric from StatsD flush
     getMetric = (metrics) ->
       (type, name, key) ->
         metrics?[type]?[name]?[key]
 
     getCurrentMetric = getMetric metrics
-    getLastMetric = getMetric @lastMetric
+    getLastMetric = getMetric @lastMetrics
 
     for event in @metrics
       # Extract alert data
@@ -74,11 +83,13 @@ class AlertDistributor
 
       # Tag on metric for alert
       event.metric = metric
-      @dispatch event if @doComparison comparison, value, metric
+      @dispatchMetricsEvent event.alert, event \
+        if @doComparison comparison, value, metric
 
     # Store metrics for delta comparisons
     @lastMetrics = metrics
 
+# Create distributor instance and attach to event emitter
 exports.init = (startupTime, config, events) ->
   alerter = new AlertDistributor config.alerts
   events.on 'packet', alerter.onPacket
