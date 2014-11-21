@@ -28,7 +28,6 @@
     "prepublish": "gulp compile"
   },
   "dependencies": {
-    "async": "^0.9.0",
     "request": "^2.48.0",
     "underscore": "^1.7.0"
   },
