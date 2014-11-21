@@ -44,13 +44,21 @@ for complete configuration example).
 }
 ```
 
+## Development
+
+This plugin is written in CoffeeScript that is compiled to Javascript automatically
+when publishing to NPM (see `gulpfile.js` and `package.json` for more details). To
+work on this plugin, simply clone the repository and run `npm install`. I would suggest
+running `gulp watch` in a separate shell to watch the source Coffeescript files for
+changes and automatically compile them to Javascript files.
+
 ## Configuration
 
 TODO: this
 
 ## Example Configuration
 
-```json
+```
 {
   backends: ["statsd-alerting-backend"],
 
