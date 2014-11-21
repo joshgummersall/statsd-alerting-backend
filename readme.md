@@ -13,7 +13,19 @@ Let's do it!
 
 ## Configuring Alerts
 
-TODO: this
+There are two different types of alerts that are supported. Those are "event" alerts
+and "metric" alerts (see example configuration file for both). "Event" alerts are
+things that you want to be alerted on immediately. An example of an event you would
+likely want to be alerted on immediately is an uncaught exception.
+
+"Metrics" alerts are a bit more complicated. StatsD publishes aggregate metrics at
+a configurable rate (default is every ten seconds). Perhaps you wanted to be alerted
+when the 90th percentile average time for an event exceeds a certain value. You can
+do that (check out the example configuration for how to set that up).
+
+This plugin is very young and I plan to include more sophisticated alerting features
+as well as more alert types. Feel free to leave feedback via the issues for things
+you would like to see added.
 
 ## Installation
 
