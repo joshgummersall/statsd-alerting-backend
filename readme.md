@@ -23,6 +23,9 @@ a configurable rate (default is every ten seconds). Perhaps you wanted to be ale
 when the 90th percentile average time for an event exceeds a certain value. You can
 do that (check out the example configuration for how to set that up).
 
+Currently you can alert using the following mechanisms: Slack (via Incoming Webhooks),
+Pagerduty, Log (to stdout), or Email.
+
 This plugin is very young and I plan to include more sophisticated alerting features
 as well as more alert types. Feel free to leave feedback via the issues for things
 you would like to see added.
