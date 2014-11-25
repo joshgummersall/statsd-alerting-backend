@@ -8,7 +8,6 @@ describe 'AlertDistributor', ->
       slack: {}
       pagerduty: key: ''
       log: {}
-      email: {}
 
   describe 'parsePacket', ->
     beforeEach ->

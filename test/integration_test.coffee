@@ -13,7 +13,6 @@ describe 'Integration Test', ->
         slack: {}
         pagerduty: key: ''
         log: {}
-        email: {}
 
       for type, dispatcher of @instance.dispatchers
         this["#{type}Mock"] = @sandbox.mock dispatcher

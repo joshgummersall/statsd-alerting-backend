@@ -26,7 +26,7 @@ when the 90th percentile average time for an event exceeds a certain value. You 
 do that (check out the example configuration for how to set that up).
 
 Currently you can alert using the following mechanisms: Slack (via Incoming Webhooks),
-Pagerduty, Log (to stdout), or Email.
+Pagerduty, or to stdout.
 
 This plugin is very young and I plan to include more sophisticated alerting features
 as well as more alert types. Feel free to leave feedback via the issues for things
@@ -75,19 +75,26 @@ TODO: this
       channel: "#alerts"
     },
 
-    email: {},
+    pagerduty: {
+      key: "<PAGERDUTY_SERVICE_KEY>"
+    },
 
     events: [{
-      name: "some.event.name",
+      name: "some.event.*",
       alert: "log"
     }],
 
     metrics: [{
-      name: "some.event.timer.name",
+      name: "some.event.timer",
       type: "timer_data",
       key: "mean_90",
-      gte: 8297,
+      delta: 10,
       alert: "slack"
+    }, {
+      name: "some.event.counter",
+      type: "counter_rates",
+      gte: 0.2,
+      alert: "pagerduty"
     }]
   }
 }
