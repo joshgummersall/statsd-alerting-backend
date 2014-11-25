@@ -69,7 +69,7 @@ will default to #alerts.
 
 Simply list your Pagerduty service key.
 
-#### `event`
+#### `events`
 
 Think of this as a list of events (StatsD `counters` or `gauges`) that you want
 to send alerts immediately as they are sent. A good example of this would be an
