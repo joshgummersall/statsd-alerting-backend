@@ -15,22 +15,21 @@ Let's do it!
 
 ## Configuring Alerts
 
-There are two different types of alerts that are supported. Those are "event" alerts
-and "metric" alerts (see example configuration file for both). "Event" alerts are
-things that you want to be alerted on immediately. An example of an event you would
-likely want to be alerted on immediately is an uncaught exception.
+There are two different types of alerts that are supported. Those are "event"
+alerts and "metric" alerts (see example configuration file for both). "Event"
+alerts are things that you want to be alerted on immediately. An example of an
+event you would likely want to be alerted on immediately is an uncaught
+exception.
 
-"Metrics" alerts are a bit more complicated. StatsD publishes aggregate metrics at
-a configurable rate (default is every ten seconds). Perhaps you wanted to be alerted
-when the 90th percentile average time for an event exceeds a certain value. You can
-do that (check out the example configuration for how to set that up).
+"Metrics" alerts are a bit more complicated. StatsD publishes aggregate metrics
+at a configurable rate (default is every ten seconds). Perhaps you wanted to be
+alerted when the 90th percentile average time for an event exceeds a certain
+value. You can do that (check out the example configuration for how to set that
+up).
 
-Currently you can alert using the following mechanisms: Slack (via Incoming Webhooks),
-Pagerduty, or to stdout.
-
-This plugin is very young and I plan to include more sophisticated alerting features
-as well as more alert types. Feel free to leave feedback via the issues for things
-you would like to see added.
+This plugin is very young and I plan to include more sophisticated alerting
+features as well as more alert types. Feel free to leave feedback via the
+issues for things you would like to see added.
 
 ## Installation
 
@@ -40,8 +39,8 @@ In your StatsD installation folder, run:
 $ npm install statsd-alerting-backend
 ```
 
-Include the backend in your `config.js` file (see example configuration file below
-for complete configuration example).
+Include the backend in your `config.js` file (see example configuration file
+below for complete configuration example).
 
 ```json
 {
@@ -51,15 +50,51 @@ for complete configuration example).
 
 ## Development
 
-This plugin is written in CoffeeScript that is compiled to Javascript automatically
-when publishing to NPM (see `gulpfile.js` and `package.json` for more details). To
-work on this plugin, simply clone the repository and run `npm install`. I would suggest
-running `gulp watch` in a separate shell to watch the source Coffeescript files for
-changes and automatically compile them to Javascript files.
+This plugin is written in CoffeeScript that is compiled to Javascript
+automatically when publishing to NPM (see `gulpfile.js` and `package.json` for
+more details). To work on this plugin, simply clone the repository and run
+`npm install`. I would suggest running `gulp watch` in a separate shell to
+watch the source Coffeescript files for changes and automatically compile them
+to Javascript files.
 
 ## Configuration
 
 TODO: this
+
+#### `slack`
+
+List your Slack incoming webhook configuration information. Required keys are
+`host` and `token`. The username will default to "statsd-alerts" and the channel
+will default to #alerts.
+
+#### `pagerduty`
+
+Simply list your Pagerduty service key.
+
+#### `event`
+
+Think of this as a list of events (StatsD `counters` or `gauges`) that you want
+to send alerts immediately as they are sent. A good example of this would be an
+exception happening or a user signing up for something. You can use wildcards
+in the event name (see [wildcard](https://www.npmjs.org/package/wildcard) for
+formatting and matching information).
+
+#### `metrics`
+
+Think of this as a list of aggregate metrics you want to alert on. Typical uses
+for this would be alerting when an average time is greater than a set value or
+when the rate of counter exceeds some value. You could also alert when the
+difference (or `delta`) of a current metric and its previous value exceeds a
+certain value. See the [integration test](https://github.com/joshgummersall/statsd-alerting-backend/blob/master/test/integration_test.coffee)
+for more information on how to use these alerts. The metrics names should be
+exact names (no wildcard matching is supported here).
+
+#### Supported Alert Types
+
+Currently you can alert using [Slack](https://slack.com/),
+[Pagerduty](http://www.pagerduty.com/), or logging to stdout. Please ensure
+that you have the proper configuration values for whichever alerting sources
+you specify in your configuration file.
 
 ## Example Configuration
 
