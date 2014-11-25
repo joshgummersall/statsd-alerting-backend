@@ -2,7 +2,7 @@ AlertDistributor = require '../src/alert_distributor'
 should = require 'should'
 sinon = require 'sinon'
 
-describe.only 'Integration Test', ->
+describe 'Integration Test', ->
   beforeEach ->
     @sandbox = sinon.sandbox.create()
 
