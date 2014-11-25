@@ -59,8 +59,6 @@ to Javascript files.
 
 ## Configuration
 
-TODO: this
-
 #### `slack`
 
 List your Slack incoming webhook configuration information. Required keys are
