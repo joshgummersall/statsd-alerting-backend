@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/joshgummersall/statsd-alerting-backend.svg?branch=master)](https://travis-ci.org/joshgummersall/statsd-alerting-backend)
+
 statsd-alerting-backend
 ======================
 
