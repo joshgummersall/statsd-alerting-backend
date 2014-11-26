@@ -54,6 +54,16 @@ module.exports = class AlertDistributor
   onPacket: (packet, rinfo) =>
     for {name, metric, type} in @parsePacket packet
       for event in @events when @matchEvent event, name
+        {comparison, value} = @getMetricComparison(event) or {}
+
+        # No support for delta comparison on packet events
+        if comparison is 'delta'
+          throw new Error 'delta comparison not supported for event alerts'
+
+        # If we have a comparison to do, do it and ignore things that
+        # we shouldn't alert on
+        continue unless @doComparison comparison, metric, value if comparison?
+
         # Note: the first argument to `extend` helps simulate a deep clone
         @dispatchEvent event.alert, _.extend {}, event, {name, metric, type}
 
