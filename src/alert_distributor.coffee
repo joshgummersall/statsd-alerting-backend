@@ -2,10 +2,12 @@ Alerts = require './alerts'
 _ = require 'underscore'
 wildcard = require 'wildcard'
 
-module.exports = class AlertDistributor
-  # Numeric StatsD events
-  @NUMERIC_TYPES: ['c', 'ms', 'g']
+# Mixin for number-ish testing
+_.mixin
+  isNumbery: (toTest = '') ->
+    not _.isNaN Number toTest
 
+module.exports = class AlertDistributor
   # Comparison functions for metrics events
   @COMPARISONS:
     gte: (a, b) -> a >= b
@@ -37,7 +39,7 @@ module.exports = class AlertDistributor
     for event in packet.toString().split('\n') or []
       [name, data] = event.split ':'
       [metric, type] = data.split '|'
-      metric = Number metric if type in @constructor.NUMERIC_TYPES
+      metric = Number metric if _.isNumbery metric
       {name, metric, type}
 
   # Matches using exact event or wildcard matching. I.e., "some.event.here"
@@ -51,9 +53,9 @@ module.exports = class AlertDistributor
   # an event emitter binding and we want it bound to the instance
   onPacket: (packet, rinfo) =>
     for {name, metric, type} in @parsePacket packet
-      continue unless type in @constructor.NUMERIC_TYPES
       for event in @events when @matchEvent event, name
-        @dispatchEvent event.alert, _.extend event, {name, metric, type}
+        # Note: the first argument to `extend` helps simulate a deep clone
+        @dispatchEvent event.alert, _.extend {}, event, {name, metric, type}
 
   # Extract metric comparison type and value from event properties defined
   # in configuration file.
