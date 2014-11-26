@@ -45,9 +45,12 @@ module.exports = class AlertDistributor
   # Matches using exact event or wildcard matching. I.e., "some.event.here"
   # will match against "some.event.here" or "some.*"
   # Note: `event.name` is what is listed in the configuration file
+  wildcardMatch: (a, b) ->
+    return true if a.toLowerCase() is b.toLowerCase()
+    wildcard(a, b)?.length > 0
+
   matchEvent: (event, name) ->
-    return true if event.name is name
-    wildcard(event.name, name)?.length > 0
+    @wildcardMatch event.name, name
 
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
@@ -79,6 +82,32 @@ module.exports = class AlertDistributor
   doComparison: (comparison, eventMetric, alertValue) ->
     compareFn = @constructor.COMPARISONS[comparison.toLowerCase()]
     compareFn?(eventMetric, alertValue) ? false
+
+  # Extracts all metrics properties that match the metrics event
+  # definition in the configuration file.
+  extractMatchedMetrics: (metricsEvent, metrics) ->
+    {type, name, key} = metricsEvent
+    subMetrics = metrics?[type]
+    return unless subMetrics
+
+    fetchMetricsProperty = (metricsObj, metricsKey) ->
+      if metricsKey of metricsObj then metricsObj[metricsKey] \
+        else metricsObj
+
+    # Extract matched metrics, careful to wildcard match name
+    matchedEventMetrics = []
+    if name of subMetrics
+      matchedEventMetrics.push
+        name: name
+        metric: fetchMetricsProperty subMetrics[name], key
+    else
+      # Grab first event from sub metrics that
+      for evtName of subMetrics when @wildcardMatch name, evtName
+        matchedEventMetrics.push
+          name: evtName
+          metric: fetchMetricsProperty subMetrics[evtName], key
+
+    matchedEventMetrics
 
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
