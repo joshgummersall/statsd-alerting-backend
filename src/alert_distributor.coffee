@@ -3,6 +3,10 @@ _ = require 'underscore'
 wildcard = require 'wildcard'
 
 module.exports = class AlertDistributor
+  # Numeric StatsD events
+  @NUMERIC_TYPES: ['c', 'ms', 'g']
+
+  # Comparison functions for metrics events
   @COMPARISONS:
     gte: (a, b) -> a >= b
     gt: (a, b) -> a > b
@@ -21,11 +25,11 @@ module.exports = class AlertDistributor
       when type of @config
 
   dispatchEvent: (type, event) ->
-    return unless type of @dispatchers
+    throw new Error 'Undefined events alert type' unless type of @dispatchers
     @dispatchers[type].sendEvent event
 
   dispatchMetricsEvent: (type, event) ->
-    return unless type of @dispatchers
+    throw new Error 'Undefined metrics alert type' unless type of @dispatchers
     @dispatchers[type].sendMetricsEvent event
 
   # Parse out event data from StatsD packet
@@ -33,7 +37,7 @@ module.exports = class AlertDistributor
     for event in packet.toString().split('\n') or []
       [name, data] = event.split ':'
       [metric, type] = data.split '|'
-      metric = Number metric if type in ['c', 'ms', 'g']
+      metric = Number metric if type in @constructor.NUMERIC_TYPES
       {name, metric, type}
 
   # Matches using exact event or wildcard matching. I.e., "some.event.here"
@@ -47,6 +51,7 @@ module.exports = class AlertDistributor
   # an event emitter binding and we want it bound to the instance
   onPacket: (packet, rinfo) =>
     for {name, metric, type} in @parsePacket packet
+      continue unless type in @constructor.NUMERIC_TYPES
       for event in @events when @matchEvent event, name
         @dispatchEvent event.alert, _.extend event, {name, metric, type}
 
