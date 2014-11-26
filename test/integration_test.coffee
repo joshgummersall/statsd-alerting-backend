@@ -134,7 +134,7 @@ describe 'Integration Test', ->
           name: 'test.log.metric'
           type: 'timer_data'
           key: 'mean_90'
-          delta: 10
+          delta_lt: 10
           alert: 'log'
         ]
 
@@ -190,7 +190,7 @@ describe 'Integration Test', ->
           'test.pagerduty.metric':
             mean_90: 9
           'test.log.metric':
-            mean_90: 70
+            mean_90: 120
 
       @verifyMocks()
 

@@ -15,6 +15,13 @@ module.exports = class AlertDistributor
     lte: (a, b) -> a <= b
     lt: (a, b) -> a < b
     delta: (a, b) -> a >= b
+    delta_gte: (a, b) -> a >= b
+    delta_gt: (a, b) -> a > b
+    delta_lte: (a, b) -> a <= b
+    delta_lt: (a, b) -> a < b
+
+  isDelta: (comparison = '') ->
+    comparison.toLowerCase().indexOf('delta') is 0
 
   constructor: (@config = {}) ->
     # Register events to dispatch alerts for
@@ -60,7 +67,7 @@ module.exports = class AlertDistributor
         {comparison, value} = @getMetricComparison(event) or {}
 
         # No support for delta comparison on packet events
-        if comparison is 'delta'
+        if @isDelta comparison
           throw new Error 'delta comparison not supported for event alerts'
 
         # If we have a comparison to do, do it and ignore things that
@@ -122,7 +129,7 @@ module.exports = class AlertDistributor
       continue unless comparison? and value?
 
       # Extract metric
-      if comparison is 'delta'
+      if @isDelta comparison
         # We compute the absolute value of the delta
         currentMetrics = @extractMatchedMetrics {type, name, key}, metrics
         lastMetrics = @extractMatchedMetrics {type, name, key}, @lastMetrics
@@ -134,7 +141,7 @@ module.exports = class AlertDistributor
         eventMetrics = for currentMetric in currentMetrics
           lastMetric = lastMetricsByName[currentMetric.name]?.metric
           if lastMetric?
-            currentMetric.metric = Math.abs currentMetric.metric - lastMetric
+            currentMetric.metric = currentMetric.metric - lastMetric
           else
             currentMetric.metric = 0
           currentMetric
