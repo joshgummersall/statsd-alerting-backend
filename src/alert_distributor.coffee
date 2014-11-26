@@ -14,11 +14,13 @@ module.exports = class AlertDistributor
     gt: (a, b) -> a > b
     lte: (a, b) -> a <= b
     lt: (a, b) -> a < b
+    eq: (a, b) -> a is b
     delta: (a, b) -> a >= b
     delta_gte: (a, b) -> a >= b
     delta_gt: (a, b) -> a > b
     delta_lte: (a, b) -> a <= b
     delta_lt: (a, b) -> a < b
+    delta_eq: (a, b) -> a is b
 
   isDelta: (comparison = '') ->
     comparison.toLowerCase().indexOf('delta') is 0
@@ -85,6 +87,12 @@ module.exports = class AlertDistributor
       value = eventConfig[key]
       return {comparison, value}
 
+  getMetricComparisons: (eventConfig) ->
+    for key of @constructor.COMPARISONS when key of eventConfig
+      comparison = key
+      value = eventConfig[key]
+      {comparison, value}
+
   # Perform comparison using comparison functions defined above
   doComparison: (comparison, eventMetric, alertValue) ->
     compareFn = @constructor.COMPARISONS[comparison.toLowerCase()]
@@ -118,6 +126,37 @@ module.exports = class AlertDistributor
 
     matchedEventMetrics
 
+  # Wraps up delta metrics computation
+  extractDeltaMetrics: (event, metrics, lastMetrics) ->
+    return unless lastMetrics
+
+    currentMetrics = @extractMatchedMetrics event, metrics
+    lastMetrics = @extractMatchedMetrics event, lastMetrics
+    lastMetricsByName = _.indexBy lastMetrics, 'name'
+
+    # Compute delta metrics and return in proper format
+    for currentMetric in currentMetrics
+      lastMetric = lastMetricsByName[currentMetric.name]?.metric
+      if lastMetric?
+        currentMetric.metric = currentMetric.metric - lastMetric
+      else
+        currentMetric.metric = 0
+      currentMetric
+
+  handleMatchedMetrics: (event, computedEventMetrics) ->
+    comparisons = @getMetricComparisons event
+    return unless comparisons?.length and computedEventMetrics?.length
+
+    for {name, metric} in computedEventMetrics
+      allComparisonsPass = _.every comparisons, ({comparison, value}) =>
+        @doComparison comparison, metric, value
+
+      if allComparisonsPass
+        # Note: the first argument to @doComparison is the actual computed
+        # metric sent from StatsD, the second is the configured alert value
+        eventToAlert = _.extend {}, event, {name, metric}
+        @dispatchMetricsEvent eventToAlert.alert, eventToAlert
+
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
   onFlush: (timestamp, metrics) =>
@@ -125,41 +164,16 @@ module.exports = class AlertDistributor
       # Extract alert configuration
       {name, type, key} = event
       {comparison, value} = @getMetricComparison event
-
       continue unless comparison? and value?
 
       # Extract metric
-      if @isDelta comparison
-        # We compute the absolute value of the delta
-        currentMetrics = @extractMatchedMetrics {type, name, key}, metrics
-        lastMetrics = @extractMatchedMetrics {type, name, key}, @lastMetrics
-
-        # Index last metrics by name for delta computations
-        lastMetricsByName = _.indexBy lastMetrics, 'name'
-
-        # Compute delta metrics and return in proper format
-        eventMetrics = for currentMetric in currentMetrics
-          lastMetric = lastMetricsByName[currentMetric.name]?.metric
-          if lastMetric?
-            currentMetric.metric = currentMetric.metric - lastMetric
-          else
-            currentMetric.metric = 0
-          currentMetric
+      eventMetrics = if @isDelta comparison
+        @extractDeltaMetrics event, metrics, @lastMetrics
       else
-        eventMetrics = @extractMatchedMetrics {type, name, key}, metrics
+        @extractMatchedMetrics event, metrics
 
-      continue unless eventMetrics?.length
-
-      for metricsEvent in eventMetrics
-        # Tag on actual metricsEvent information for alert
-        event.name = metricsEvent.name
-        event.metric = metricsEvent.metric
-
-        # Compare and dispatch. Note: the first argument to @doComparison is the
-        # actual computed metric sent from StatsD, the second is the configured value
-        # to alert
-        @dispatchMetricsEvent event.alert, event \
-          if @doComparison comparison, metricsEvent.metric, value
+      # Perform comparisons on events and dispatch appropriately
+      @handleMatchedMetrics event, eventMetrics
 
     # Store metrics for delta comparisons
     @lastMetrics = metrics

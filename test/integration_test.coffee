@@ -236,3 +236,28 @@ describe 'Integration Test', ->
           'test.pagerduty.metric': 0.1
 
       @verifyMocks()
+
+    it 'works with multiple comparisons', ->
+      @newInstance
+        metrics: [
+          name: 'test.slack.metric'
+          type: 'counter_rates'
+          gte: 0.1
+          alert: 'slack'
+        ,
+          name: 'test.pagerduty.metric'
+          type: 'counter_rates'
+          gte: 0.1
+          eq: 0.2
+          alert: 'pagerduty'
+        ]
+
+      @dispatchesMetrics 'slack'
+      @noMetricsDispatchedFor 'pagerduty'
+
+      @flush
+        counter_rates:
+          'test.slack.metric': 0.4
+          'test.pagerduty.metric': 0.3
+
+      @verifyMocks()
