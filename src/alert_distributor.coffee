@@ -91,8 +91,10 @@ module.exports = class AlertDistributor
     return unless subMetrics
 
     fetchMetricsProperty = (metricsObj, metricsKey) ->
-      if metricsKey of metricsObj then metricsObj[metricsKey] \
-        else metricsObj
+      if metricsKey? and metricsKey of metricsObj
+        metricsObj[metricsKey]
+      else
+        metricsObj
 
     # Extract matched metrics, careful to wildcard match name
     matchedEventMetrics = []
@@ -112,18 +114,6 @@ module.exports = class AlertDistributor
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
   onFlush: (timestamp, metrics) =>
-    # Helper to extract a metric from StatsD flush
-    getMetric = (metrics) ->
-      (type, name, key) ->
-        return unless metrics?
-        keys = _.compact [type, name, key]
-        tmp = metrics
-        tmp = tmp[key] for key in keys when key of tmp
-        tmp
-
-    getCurrentMetric = getMetric metrics
-    getLastMetric = getMetric @lastMetrics
-
     for event in @metrics
       # Extract alert configuration
       {name, type, key} = event
@@ -134,23 +124,35 @@ module.exports = class AlertDistributor
       # Extract metric
       if comparison is 'delta'
         # We compute the absolute value of the delta
-        currentMetric = getCurrentMetric type, name, key
-        lastMetric = getLastMetric type, name, key
-        eventMetric = if currentMetric and lastMetric \
-          then Math.abs currentMetric - lastMetric else 0
+        currentMetrics = @extractMatchedMetrics {type, name, key}, metrics
+        lastMetrics = @extractMatchedMetrics {type, name, key}, @lastMetrics
+
+        # Index last metrics by name for delta computations
+        lastMetricsByName = _.indexBy lastMetrics, 'name'
+
+        # Compute delta metrics and return in proper format
+        eventMetrics = for currentMetric in currentMetrics
+          lastMetric = lastMetricsByName[currentMetric.name]?.metric
+          if lastMetric?
+            currentMetric.metric = Math.abs currentMetric.metric - lastMetric
+          else
+            currentMetric.metric = 0
+          currentMetric
       else
-        eventMetric = getCurrentMetric type, name, key
+        eventMetrics = @extractMatchedMetrics {type, name, key}, metrics
 
-      continue unless eventMetric? and _.isNumber eventMetric
+      continue unless eventMetrics?.length
 
-      # Tag on metric for alert
-      event.metric = eventMetric
+      for metricsEvent in eventMetrics
+        # Tag on actual metricsEvent information for alert
+        event.name = metricsEvent.name
+        event.metric = metricsEvent.metric
 
-      # Compare and dispatch. Note: the first argument to @doComparison is the
-      # actual computed metric sent from StatsD, the second is the configured value
-      # to alert
-      @dispatchMetricsEvent event.alert, event \
-        if @doComparison comparison, eventMetric, value
+        # Compare and dispatch. Note: the first argument to @doComparison is the
+        # actual computed metric sent from StatsD, the second is the configured value
+        # to alert
+        @dispatchMetricsEvent event.alert, event \
+          if @doComparison comparison, metricsEvent.metric, value
 
     # Store metrics for delta comparisons
     @lastMetrics = metrics

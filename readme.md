@@ -84,8 +84,9 @@ for this would be alerting when an average time is greater than a set value or
 when the rate of counter exceeds some value. You could also alert when the
 difference (or `delta`) of a current metric and its previous value exceeds a
 certain value. See the [integration test](https://github.com/joshgummersall/statsd-alerting-backend/blob/master/test/integration_test.coffee)
-for more information on how to use these alerts. The metrics names should be
-exact names (no wildcard matching is supported here).
+for more information on how to use these alerts. You can also use wildcards
+in the metrics name for matching. A wildcard will match any events of a specific
+type (i.e. `timer_data` or `counter_rates`).
 
 #### Supported Alert Types
 
@@ -118,7 +119,7 @@ you specify in your configuration file.
     }],
 
     metrics: [{
-      name: "some.event.timer",
+      name: "some.*.timer",
       type: "timer_data",
       key: "mean_90",
       delta: 10,

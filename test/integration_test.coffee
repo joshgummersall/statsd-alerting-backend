@@ -157,6 +157,43 @@ describe 'Integration Test', ->
 
       @verifyMocks()
 
+    it 'works with wildcards', ->
+      @newInstance
+        metrics: [
+          name: 'test.*.metric'
+          type: 'timer_data'
+          key: 'mean_90'
+          lte: 10
+          alert: 'slack'
+        ,
+          name: 'test.*.metric'
+          type: 'timer_data'
+          key: 'mean_90'
+          delta: 10
+          alert: 'log'
+        ]
+
+      # This is gross. Sorry.
+      @instance.lastMetrics =
+        timer_data:
+          'test.log.metric':
+            mean_90: 100
+
+      # Slack alert should be dispatched twice due to wildcards
+      @dispatchesMetrics 'log'
+      @slackMock.expects('sendMetricsEvent').twice()
+
+      @flush
+        timer_data:
+          'test.slack.metric':
+            mean_90: 8
+          'test.pagerduty.metric':
+            mean_90: 9
+          'test.log.metric':
+            mean_90: 70
+
+      @verifyMocks()
+
     it 'ignores delta comparison when there are no lastMetrics', ->
       @newInstance
         metrics: [
