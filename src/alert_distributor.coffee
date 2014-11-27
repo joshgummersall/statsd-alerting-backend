@@ -66,27 +66,24 @@ module.exports = class AlertDistributor
   onPacket: (packet, rinfo) =>
     for {name, metric, type} in @parsePacket packet
       for event in @events when @matchEvent event, name
-        {comparison, value} = @getMetricComparison(event) or {}
+        comparisons = @getMetricComparisons(event) or []
+        if comparisons?.length
+          allComparisonsPass = _.every comparisons, ({comparison, value}) =>
+            # No support for delta comparison on packet events
+            throw new Error 'delta comparison not supported for event alerts' \
+              if @isDelta comparison
 
-        # No support for delta comparison on packet events
-        if @isDelta comparison
-          throw new Error 'delta comparison not supported for event alerts'
+            @doComparison comparison, metric, value
+        else
+          allComparisonsPass = true
 
-        # If we have a comparison to do, do it and ignore things that
-        # we shouldn't alert on
-        continue unless @doComparison comparison, metric, value if comparison?
+        continue unless allComparisonsPass
 
         # Note: the first argument to `extend` helps simulate a deep clone
         @dispatchEvent event.alert, _.extend {}, event, {name, metric, type}
 
   # Extract metric comparison type and value from event properties defined
   # in configuration file.
-  getMetricComparison: (eventConfig) ->
-    for key of @constructor.COMPARISONS when key of eventConfig
-      comparison = key
-      value = eventConfig[key]
-      return {comparison, value}
-
   getMetricComparisons: (eventConfig) ->
     for key of @constructor.COMPARISONS when key of eventConfig
       comparison = key
@@ -143,37 +140,36 @@ module.exports = class AlertDistributor
         currentMetric.metric = 0
       currentMetric
 
-  handleMatchedMetrics: (event, computedEventMetrics) ->
-    comparisons = @getMetricComparisons event
-    return unless comparisons?.length and computedEventMetrics?.length
+  handleEventMetrics: (eventConfig, eventMetrics) ->
+    comparisons = @getMetricComparisons eventConfig
+    return unless comparisons?.length
 
-    for {name, metric} in computedEventMetrics
+    for {name, metric, deltaMetric} in eventMetrics
       allComparisonsPass = _.every comparisons, ({comparison, value}) =>
-        @doComparison comparison, metric, value
+        compareMetric = if @isDelta comparison then deltaMetric else metric
+        @doComparison comparison, compareMetric, value
 
       if allComparisonsPass
         # Note: the first argument to @doComparison is the actual computed
         # metric sent from StatsD, the second is the configured alert value
-        eventToAlert = _.extend {}, event, {name, metric}
+        eventToAlert = _.extend {}, eventConfig, {name, metric}
         @dispatchMetricsEvent eventToAlert.alert, eventToAlert
 
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
   onFlush: (timestamp, metrics) =>
     for event in @metrics
-      # Extract alert configuration
-      {name, type, key} = event
-      {comparison, value} = @getMetricComparison event
-      continue unless comparison? and value?
+      # compute all metrics for use in handler
+      matchedMetrics = @extractMatchedMetrics event, metrics
+      deltaMetrics = @extractDeltaMetrics event, metrics, @lastMetrics
 
-      # Extract metric
-      eventMetrics = if @isDelta comparison
-        @extractDeltaMetrics event, metrics, @lastMetrics
-      else
-        @extractMatchedMetrics event, metrics
+      # Join up the metrics
+      deltaMetricsByName = _.indexBy deltaMetrics, 'name'
+      eventMetrics = for {name, metric} in matchedMetrics
+        _.extend {name, metric}, deltaMetric: deltaMetricsByName[name]?.metric
 
       # Perform comparisons on events and dispatch appropriately
-      @handleMatchedMetrics event, eventMetrics
+      @handleEventMetrics event, eventMetrics
 
     # Store metrics for delta comparisons
     @lastMetrics = metrics

@@ -261,3 +261,26 @@ describe 'Integration Test', ->
           'test.pagerduty.metric': 0.3
 
       @verifyMocks()
+
+    it 'works with multiple types of comparisons', ->
+      @newInstance
+        metrics: [
+          name: 'test.pagerduty.metric'
+          type: 'counter_rates'
+          delta_lt: 0.0
+          eq: 0
+          alert: 'pagerduty'
+        ]
+
+      # This is gross. Sorry.
+      @instance.lastMetrics =
+        counter_rates:
+          'test.pagerduty.metric': 4.8
+
+      @dispatchesMetrics 'pagerduty'
+
+      @flush
+        counter_rates:
+          'test.pagerduty.metric': 0.0
+
+      @verifyMocks()
