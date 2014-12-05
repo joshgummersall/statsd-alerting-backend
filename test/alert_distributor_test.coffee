@@ -5,9 +5,16 @@ sinon = require 'sinon'
 describe 'AlertDistributor', ->
   beforeEach ->
     @instance = new AlertDistributor
-      slack: {}
-      pagerduty: key: ''
-      log: {}
+      dispatchers:
+        slack:
+          type: 'slack'
+          config: {}
+        pagerduty:
+          type: 'pagerduty'
+          config: key: ''
+        log:
+          type: 'log'
+          config: {}
 
   describe 'parsePacket', ->
     beforeEach ->

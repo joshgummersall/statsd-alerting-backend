@@ -30,18 +30,20 @@ module.exports = class AlertDistributor
     @events = @config.events or []
     @metrics = @config.metrics or []
 
-    # Build dispatchers for events
+    # Build dispatchers for event
     @dispatchers = {}
-    @dispatchers[type] = new klass @config[type] for type, klass of Alerts \
-      when type of @config
+    for name, {type, config} of @config.dispatchers when type of Alerts
+      @dispatchers[name] = new Alerts[type] config
 
-  dispatchEvent: (type, event) ->
-    throw new Error 'Undefined events alert type' unless type of @dispatchers
-    @dispatchers[type].sendEvent event
+  dispatchEvent: (name, event) ->
+    throw new Error "#{name} is not a valid events alert dispatcher" \
+      unless name of @dispatchers
+    @dispatchers[name].sendEvent event
 
-  dispatchMetricsEvent: (type, event) ->
-    throw new Error 'Undefined metrics alert type' unless type of @dispatchers
-    @dispatchers[type].sendMetricsEvent event
+  dispatchMetricsEvent: (name, event) ->
+    throw new Error "#{name} is not a valid metrics alert dispatcher" \
+      unless name of @dispatchers
+    @dispatchers[name].sendMetricsEvent event
 
   # Parse out event data from StatsD packet
   parsePacket: (packet) ->
@@ -80,7 +82,7 @@ module.exports = class AlertDistributor
         continue unless allComparisonsPass
 
         # Note: the first argument to `extend` helps simulate a deep clone
-        @dispatchEvent event.alert, _.extend {}, event, {name, metric, type}
+        @dispatchEvent event.dispatcher, _.extend {}, event, {name, metric, type}
 
   # Extract metric comparison type and value from event properties defined
   # in configuration file.
@@ -153,7 +155,7 @@ module.exports = class AlertDistributor
         # Note: the first argument to @doComparison is the actual computed
         # metric sent from StatsD, the second is the configured alert value
         eventToAlert = _.extend {}, eventConfig, {name, metric}
-        @dispatchMetricsEvent eventToAlert.alert, eventToAlert
+        @dispatchMetricsEvent eventToAlert.dispatcher, eventToAlert
 
   # Note: bound with fat arrow because it is passed as a function to
   # an event emitter binding and we want it bound to the instance
