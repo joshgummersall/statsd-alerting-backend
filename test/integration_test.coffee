@@ -8,11 +8,18 @@ describe 'Integration Test', ->
 
     @newInstance = (eventConfig = {}) =>
       @instance = new AlertDistributor
+        dispatchers:
+          slack:
+            type: 'slack'
+            config: {}
+          pagerduty:
+            type: 'pagerduty'
+            config: key: ''
+          log:
+            type: 'log'
+            config: {}
         events: eventConfig.events
         metrics: eventConfig.metrics
-        slack: {}
-        pagerduty: key: ''
-        log: {}
 
       for type, dispatcher of @instance.dispatchers
         this["#{type}Mock"] = @sandbox.mock dispatcher
@@ -46,13 +53,13 @@ describe 'Integration Test', ->
       @newInstance
         events: [
           name: 'test.slack.event'
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.pagerduty.event'
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ,
           name: 'test.log.event'
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       @dispatchesEvents 'slack', 'pagerduty', 'log'
@@ -69,14 +76,14 @@ describe 'Integration Test', ->
       @newInstance
         events: [
           name: 'test.slack.event'
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.pagerduty.event'
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ,
           name: 'test.log.event'
           gte: 10
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       @dispatchesEvents 'slack', 'pagerduty'
@@ -95,7 +102,7 @@ describe 'Integration Test', ->
         events: [
           name: 'test.log.event'
           delta: 10
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       @noEventsDispatchedFor 'log'
@@ -123,19 +130,19 @@ describe 'Integration Test', ->
           name: 'test.slack.metric'
           type: 'counter_rates'
           gte: 0.1
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.pagerduty.metric'
           type: 'timer_data'
           key: 'mean_90'
           lte: 10
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ,
           name: 'test.log.metric'
           type: 'timer_data'
           key: 'mean_90'
           delta_lt: 10
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       # This is gross. Sorry.
@@ -164,13 +171,13 @@ describe 'Integration Test', ->
           type: 'timer_data'
           key: 'mean_90'
           lte: 10
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.*.metric'
           type: 'timer_data'
           key: 'mean_90'
           delta: 10
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       # This is gross. Sorry.
@@ -201,7 +208,7 @@ describe 'Integration Test', ->
           type: 'timer_data'
           key: 'mean_90'
           delta: 10
-          alert: 'log'
+          dispatcher: 'log'
         ]
 
       @noMetricsDispatchedFor 'log'
@@ -219,12 +226,12 @@ describe 'Integration Test', ->
           name: 'test.slack.metric'
           type: 'counter_rates'
           gte: 0.1
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.pagerduty.metric'
           type: 'counter_rates'
           gte: 0.9
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ]
 
       @dispatchesMetrics 'slack'
@@ -243,13 +250,13 @@ describe 'Integration Test', ->
           name: 'test.slack.metric'
           type: 'counter_rates'
           gte: 0.1
-          alert: 'slack'
+          dispatcher: 'slack'
         ,
           name: 'test.pagerduty.metric'
           type: 'counter_rates'
           gte: 0.1
           eq: 0.2
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ]
 
       @dispatchesMetrics 'slack'
@@ -269,7 +276,7 @@ describe 'Integration Test', ->
           type: 'counter_rates'
           delta_lt: 0.0
           eq: 0
-          alert: 'pagerduty'
+          dispatcher: 'pagerduty'
         ]
 
       # This is gross. Sorry.

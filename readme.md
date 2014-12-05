@@ -59,15 +59,28 @@ to Javascript files.
 
 ## Configuration
 
-#### `slack`
+#### `dispatchers`
+
+Here you can define a set of dispatchers to use when sending alerts. They can
+be named anything (names must be unique as it is a Javascript object). See the
+example config file for formatting. Each dispatcher must have a type that is
+one of the valid alert dispatchers (currently "slack", "pagerduty", and "log").
+Each dispatcher must also include the necessary configuration for the alert
+dispatcher.
+
+#### `slack` configuration
 
 List your Slack incoming webhook configuration information. Required keys are
 `host` and `token`. The username will default to "statsd-alerts" and the channel
 will default to #alerts.
 
-#### `pagerduty`
+#### `pagerduty` configuration
 
 Simply list your Pagerduty service key.
+
+#### `log` configuration
+
+Target, one of `stdout` or `stderr`. Defaults to `stdout`.
 
 #### `events`
 
@@ -102,20 +115,35 @@ you specify in your configuration file.
   backends: ["statsd-alerting-backend"],
 
   alerts: {
-    slack: {
-      host: "<SLACK_HOST>",
-      token: "<SLACK_TOKEN>",
-      username: "statsd-alerts",
-      channel: "#alerts"
-    },
+    dispatchers: {
+      slackDispatcher: {
+        type: "slack",
+        config: {
+          host: "<SLACK_HOST>",
+          token: "<SLACK_TOKEN>",
+          username: "statsd-alerts",
+          channel: "#alerts"
+        }
+      },
 
-    pagerduty: {
-      key: "<PAGERDUTY_SERVICE_KEY>"
+      pagerdutyDispatcher: {
+        type: "pagerduty",
+        config: {
+          key: "<PAGERDUTY_SERVICE_KEY>"
+        }
+      },
+
+      logDispatcher: {
+        type: "log",
+        config: {
+          target: "stdout"
+        }
+      }
     },
 
     events: [{
       name: "some.event.*",
-      alert: "log"
+      dispatcher: "logDispatcher"
     }],
 
     metrics: [{
@@ -123,12 +151,12 @@ you specify in your configuration file.
       type: "timer_data",
       key: "mean_90",
       delta: 10,
-      alert: "slack"
+      dispatcher: "slackDispatcher"
     }, {
       name: "some.event.counter",
       type: "counter_rates",
       gte: 0.2,
-      alert: "pagerduty"
+      alert: "pagerdutyDispatcher"
     }]
   }
 }
