@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "pagerduty": "0.0.3",
+    "raven": "~0.6.3",
     "request": "^2.48.0",
     "underscore": "^1.7.0",
     "wildcard": "^1.1.0"

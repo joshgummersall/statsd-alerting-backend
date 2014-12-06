@@ -1,4 +1,6 @@
 module.exports =
   log: require './log'
-  slack: require './slack'
   pagerduty: require './pagerduty'
+  sentry: require './sentry'
+  slack: require './slack'
+
