@@ -1,6 +1,6 @@
 {
   "name": "statsd-alerting-backend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple StatsD backend to send customizable alerts",
   "keywords": [
     "statsd",
@@ -19,6 +19,10 @@
     "email": "josh@joshgummersall.me",
     "url": "http://joshgummersall.me"
   },
+  "contributors": [{
+    "name": "Chris Whitten",
+    "email": "christopherwhitten@gmail.com"
+  }],
   "main": "lib/index.js",
   "repository": {
     "type": "git",
