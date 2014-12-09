@@ -13,7 +13,7 @@ module.exports = class SentryAlert extends Alert
   # https://github.com/getsentry/raven-node for more details
   sendToSentry: (message, options = {}) ->
     sentry = new Sentry.client @config.dsn
-    options.level = 'info' unless options.level?
+    options.level or= 'info'
     Sentry.captureMessage message, options
 
   sendEvent: (event, options) ->
