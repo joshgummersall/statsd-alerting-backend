@@ -18,6 +18,9 @@ describe 'Integration Test', ->
           log:
             type: 'log'
             config: {}
+          sentry:
+            type: 'sentry'
+            config: dsn: ''
         events: eventConfig.events
         metrics: eventConfig.metrics
 
@@ -60,14 +63,18 @@ describe 'Integration Test', ->
         ,
           name: 'test.log.event'
           dispatcher: 'log'
+        ,
+          name: 'test.sentry.event'
+          dispatcher: 'sentry'
         ]
 
-      @dispatchesEvents 'slack', 'pagerduty', 'log'
+      @dispatchesEvents 'slack', 'pagerduty', 'log', 'sentry'
 
       @packet [
         'test.slack.event:1|c'
         'test.pagerduty.event:1|c'
         'test.log.event:1|c'
+        'test.sentry.event:1|c'
       ].join '\n'
 
       @verifyMocks()
@@ -84,15 +91,20 @@ describe 'Integration Test', ->
           name: 'test.log.event'
           gte: 10
           dispatcher: 'log'
+        ,
+          name: 'test.sentry.event'
+          gte: 5
+          dispatcher: 'sentry'
         ]
 
       @dispatchesEvents 'slack', 'pagerduty'
-      @noEventsDispatchedFor 'log'
+      @noEventsDispatchedFor 'log', 'sentry'
 
       @packet [
         'test.slack.event:1|c'
         'test.pagerduty.event:1|c'
         'test.log.event:1|c'
+        'test.sentry.event:1|c'
       ].join '\n'
 
       @verifyMocks()
@@ -113,6 +125,7 @@ describe 'Integration Test', ->
           'test.slack.event:1|c'
           'test.pagerduty.event:1|c'
           'test.log.event:1|c'
+          'test.sentry.event:1|c'
         ].join '\n'
       catch err
         deltaEventError = err
@@ -257,15 +270,21 @@ describe 'Integration Test', ->
           gte: 0.1
           eq: 0.2
           dispatcher: 'pagerduty'
+        ,
+          name: 'test.sentry.metric'
+          type: 'counter_rates'
+          gte: 0.4
+          dispatcher: 'sentry'
         ]
 
       @dispatchesMetrics 'slack'
-      @noMetricsDispatchedFor 'pagerduty'
+      @noMetricsDispatchedFor 'pagerduty', 'sentry'
 
       @flush
         counter_rates:
           'test.slack.metric': 0.4
           'test.pagerduty.metric': 0.3
+          'test.sentry.metric': 0.2
 
       @verifyMocks()
 

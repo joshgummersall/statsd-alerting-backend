@@ -6,14 +6,17 @@ describe 'AlertDistributor', ->
   beforeEach ->
     @instance = new AlertDistributor
       dispatchers:
-        slack:
-          type: 'slack'
+        log:
+          type: 'log'
           config: {}
         pagerduty:
           type: 'pagerduty'
           config: key: ''
-        log:
-          type: 'log'
+        sentry:
+          type: 'sentry'
+          config: dsn: ''
+        slack:
+          type: 'slack'
           config: {}
 
   describe 'parsePacket', ->
