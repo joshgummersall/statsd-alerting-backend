@@ -6,7 +6,8 @@ module.exports = class PagerdutyAlert extends Alert
     @pager = new Pagerduty serviceKey: @config.key
 
   sendToPagerduty: (description, event) ->
-    @pager.create {description, details: event}
+    {name} = event
+    @pager.create {description, incidentKey: name, details: event}
 
   sendEvent: (event) ->
     @sendToPagerduty 'event alert', event
