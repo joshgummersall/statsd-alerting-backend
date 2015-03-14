@@ -88,13 +88,19 @@ describe 'AlertDistributor', ->
       extracted = @extractMatchedMetrics 'timer_data', 'event.1.response',
         'mean_90'
       extracted.length.should.eql 1
-      extracted[0].metric.should.eql @metrics.timer_data['event.1.response'].mean_90
+      extracted[0]
+        .metric
+        .should
+        .eql @metrics.timer_data['event.1.response'].mean_90
 
     it 'should match a metric with a wildcard', ->
       extracted = @extractMatchedMetrics 'timer_data', 'event.*.response',
         'sum_90'
       extracted.length.should.eql 2
-      extracted[1].metric.should.eql @metrics.timer_data['event.2.response'].sum_90
+      extracted[1]
+        .metric
+        .should
+        .eql @metrics.timer_data['event.2.response'].sum_90
 
     it 'should not match', ->
       extracted = @extractMatchedMetrics 'timer_data', 'no.match.*',

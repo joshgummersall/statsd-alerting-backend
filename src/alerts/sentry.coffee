@@ -17,9 +17,13 @@ module.exports = class SentryAlert extends Alert
     Sentry.captureMessage message, options
 
   sendEvent: (event, options) ->
-    @sendToSentry "Event alert for #{event.name}!\n```#{JSON.stringify event}```",
-      options
+    @sendToSentry [
+      "Event alert for #{event.name}!"
+      "```#{JSON.stringify event}```"
+    ].join('\n'), options
 
   sendMetricsEvent: (event, options) ->
-    @sendToSentry "Metrics alert for #{event.name}!\n```#{JSON.stringify event}```",
-      options
+    @sendToSentry [
+      "Metrics alert for #{event.name}!"
+      "```#{JSON.stringify event}```"
+    ].join('\n'), options

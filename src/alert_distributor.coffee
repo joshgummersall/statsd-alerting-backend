@@ -82,7 +82,8 @@ module.exports = class AlertDistributor
         continue unless allComparisonsPass
 
         # Note: the first argument to `extend` helps simulate a deep clone
-        @dispatchEvent event.dispatcher, _.extend {}, event, {name, metric, type}
+        @dispatchEvent event.dispatcher, _.extend {}, event,
+          {name, metric, type}
 
   # Extract metric comparison type and value from event properties defined
   # in configuration file.
