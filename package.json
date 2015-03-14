@@ -19,10 +19,12 @@
     "email": "josh@joshgummersall.me",
     "url": "http://joshgummersall.me"
   },
-  "contributors": [{
-    "name": "Chris Whitten",
-    "email": "christopherwhitten@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Chris Whitten",
+      "email": "christopherwhitten@gmail.com"
+    }
+  ],
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
   },
   "scripts": {
     "prepublish": "gulp compile",
+    "lint": "node_modules/.bin/gulp lint",
     "test": "node_modules/.bin/mocha -r coffee-script/register test/**/*_test.coffee"
   },
   "dependencies": {
@@ -43,6 +46,7 @@
     "coffee-script": "^1.8.0",
     "gulp": "^3.8.10",
     "gulp-coffee": "^2.2.0",
+    "gulp-coffeelint": "^0.4.0",
     "gulp-util": "^3.0.1",
     "mocha": "^2.0.1",
     "should": "^4.3.0",

@@ -6,6 +6,7 @@ cache:
     - node_modules
 script:
   - grep -R '\.only' test; [[ ! $? -eq 0 ]]
+  - npm run lint
   - npm test
 branches:
   only:
