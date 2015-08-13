@@ -64,7 +64,7 @@ to Javascript files.
 Here you can define a set of dispatchers to use when sending alerts. They can
 be named anything (names must be unique as it is a Javascript object). See the
 example config file for formatting. Each dispatcher must have a type that is
-one of the valid alert dispatchers (currently "slack", "pagerduty", and "log").
+one of the valid alert dispatchers (currently "slack", "pagerduty", "hipchat", and "log").
 Each dispatcher must also include the necessary configuration for the alert
 dispatcher.
 
@@ -81,6 +81,16 @@ Simply list your Pagerduty service key.
 #### `sentry` configuration
 
 Simply list your Sentry DSN.
+
+#### `hipchat` configuration
+
+List your hipchat api `key` and the `room` name to which you want to send the alerts.
+If a room with that name does not exist, then the backend will create it for you.
+Optionally you can also set a `color` for the messages sent to hipchat. Available colors are
+yellow (default), red, green, purple, gray and random.
+
+Make sure that the key provided has enabled the scopes `manage_rooms` (necessary for the backend
+to create the room in case it doesn't exist), `view_room` and `send_notification`.
 
 #### `log` configuration
 
@@ -141,6 +151,15 @@ values for whichever alerting sources you specify in your configuration file.
         type: "sentry",
         config: {
           dsn: "<SENTRY_DSN>"
+        }
+      },
+      
+      hipchatDispatcher: {
+        type: "hipchat",
+        config: {
+          key: "<HIPCHAT_API_KEY>",
+          room: "<HIPCHAT_ROOM_NAME>",
+          color: "red"
         }
       },
 
