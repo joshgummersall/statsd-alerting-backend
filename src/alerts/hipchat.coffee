@@ -17,7 +17,7 @@ module.exports = class HipChatAlert extends Alert
   sendToHipChat: (message) ->
     options =
       message: message
-      color: if @config.color then @config.color else 'yellow'
+      color: @config.color or 'yellow'
     @api.notify @config.room, options, (err, response) ->
       if err
         throw new Error "[Hipchat] Couldn't send message to room: #{err}"
