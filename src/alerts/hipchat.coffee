@@ -1,5 +1,4 @@
 Alert = require './alert'
-request = require 'request'
 Hipchatter = require 'hipchatter'
 
 module.exports = class HipChatAlert extends Alert
@@ -18,7 +17,7 @@ module.exports = class HipChatAlert extends Alert
   sendToHipChat: (message) ->
     options =
       message: message
-      color: @config.color ? 'yellow'
+      color: if @config.color then @config.color else 'yellow'
     @api.notify @config.room, options, (err, response) ->
       if err
         throw new Error "[Hipchat] Couldn't send message to room: #{err}"
