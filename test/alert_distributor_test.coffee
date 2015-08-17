@@ -18,6 +18,9 @@ describe 'AlertDistributor', ->
         slack:
           type: 'slack'
           config: {}
+        hipchat:
+          type: 'hipchat'
+          config: {}
 
   describe 'parsePacket', ->
     beforeEach ->
