@@ -5,7 +5,7 @@ module.exports = class HipChatAlert extends Alert
   constructor: (@config) ->
     @api = new Hipchatter @config.key
     # Check that the configured room exists, otherwise create it
-    @api.get_room @config.room, (err, response) ->
+    @api.get_room @config.room, (err, response) =>
       if err
         # room does not exist, let's create it
         room_data =
