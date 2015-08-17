@@ -15,6 +15,7 @@ module.exports = class HipChatAlert extends Alert
             throw new Error "[Hipchat] Couldn't create room: #{err}"
 
   sendToHipChat: (message) ->
+    # color of the message defaults to yellow if it's falsey in the config
     options =
       message: message
       color: @config.color or 'yellow'
