@@ -48,6 +48,7 @@ module.exports = class AlertDistributor
   # Parse out event data from StatsD packet
   parsePacket: (packet) ->
     for event in packet.toString().split('\n') or []
+      continue if !event
       [name, data] = event.split ':'
       [metric, type] = data.split '|'
       metric = Number metric if _.isNumbery metric
