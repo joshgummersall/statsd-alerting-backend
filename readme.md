@@ -167,7 +167,7 @@ values for whichever alerting sources you specify in your configuration file.
       name: "some.event.counter",
       type: "counter_rates",
       gte: 0.2,
-      alert: "pagerdutyDispatcher"
+      dispatcher: "pagerdutyDispatcher"
     }]
   }
 }
