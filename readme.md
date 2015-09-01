@@ -107,8 +107,8 @@ type (i.e. `timer_data` or `counter_rates`).
 
 #### Supported Alert Types
 
-Currently you can alert using [Slack](https://slack.com/),
-[Pagerduty](http://www.pagerduty.com/), [Sentry](https://getsentry.com/welcome/)
+Currently you can alert using [Slack](https://slack.com/), [HipChat](https://www.hipchat.com/),
+[Pagerduty](http://www.pagerduty.com/), [Sentry](https://getsentry.com/welcome/) 
 or logging to stdout. Please ensure that you have the proper configuration
 values for whichever alerting sources you specify in your configuration file.
 
@@ -167,7 +167,7 @@ values for whichever alerting sources you specify in your configuration file.
       name: "some.event.counter",
       type: "counter_rates",
       gte: 0.2,
-      alert: "pagerdutyDispatcher"
+      dispatcher: "pagerdutyDispatcher"
     }]
   }
 }
