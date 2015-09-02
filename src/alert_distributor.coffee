@@ -48,6 +48,7 @@ module.exports = class AlertDistributor
   # Parse out event data from StatsD packet
   parsePacket: (packet) ->
     for event in packet.toString().split('\n') or []
+      continue unless event
       [name, data] = event.split ':'
       [metric, type] = data.split '|'
       metric = Number metric if _.isNumbery metric
@@ -103,7 +104,7 @@ module.exports = class AlertDistributor
   extractMatchedMetrics: (metricsEvent, metrics) ->
     {type, name, key} = metricsEvent
     subMetrics = metrics?[type]
-    return unless subMetrics
+    return [] unless subMetrics
 
     fetchMetricsProperty = (metricsObj, metricsKey) ->
       if metricsKey? and metricsKey of metricsObj
