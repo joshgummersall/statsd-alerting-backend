@@ -20,13 +20,19 @@ module.exports = class SlackAlert extends Alert
         unless resp.statusCode < 400
 
   sendEvent: (event) ->
-    @sendToSlack [
+    eventString = @renderEvent event
+    eventString = [
       "Event alert for #{event.name}!"
       "```#{JSON.stringify event}```"
-    ].join '\n'
+    ].join '\n' unless eventString
+
+    @sendToSlack eventString
 
   sendMetricsEvent: (event) ->
-    @sendToSlack [
+    eventString = @renderEvent event
+    eventString = [
       "Metrics alert for #{event.name}!"
       "```#{JSON.stringify event}```"
-    ].join '\n'
+    ].join '\n' unless eventString
+
+    @sendToSlack eventString

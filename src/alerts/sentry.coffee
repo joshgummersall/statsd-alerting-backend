@@ -1,29 +1,29 @@
 Alert = require './alert'
 Sentry = require 'raven'
-_ = require 'underscore'
-request = require 'request'
 
 module.exports = class SentryAlert extends Alert
+  constructor: (@config) ->
+    super @config
+    @sentry = new Sentry.Client @config.dsn
 
-  # The options parameter allows additional data
-  # into the log with reserved properties such as
-  #   info: ''
-  #   tags: {}
-  #   extra: {}
-  # https://github.com/getsentry/raven-node for more details
-  sendToSentry: (message, options = {}) ->
-    sentry = new Sentry.client @config.dsn
-    options.level or= 'info'
-    Sentry.captureMessage message, options
+  sendToSentry: (message) ->
+    level = @config.level or 'info'
+    @sentry.captureMessage message, {level}
 
-  sendEvent: (event, options) ->
-    @sendToSentry [
+  sendEvent: (event) ->
+    eventString = @renderEvent event
+    eventString = [
       "Event alert for #{event.name}!"
       "```#{JSON.stringify event}```"
-    ].join('\n'), options
+    ].join '\n' unless eventString
 
-  sendMetricsEvent: (event, options) ->
-    @sendToSentry [
+    @sendToSentry eventString
+
+  sendMetricsEvent: (event) ->
+    eventString = @renderEvent event
+    eventString = [
       "Metrics alert for #{event.name}!"
       "```#{JSON.stringify event}```"
-    ].join('\n'), options
+    ].join '\n' unless eventString
+
+    @sendToSentry eventString
