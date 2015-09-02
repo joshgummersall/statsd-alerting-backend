@@ -20,7 +20,7 @@ module.exports = class SentryAlert extends Alert
     @sendToSentry eventString
 
   sendMetricsEvent: (event) ->
-    eventString = @renderEvent event
+    eventString = @renderMetricsEvent event
     eventString = [
       "Metrics alert for #{event.name}!"
       "```#{JSON.stringify event}```"

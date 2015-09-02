@@ -2,7 +2,10 @@ Handlebars = require 'handlebars'
 
 module.exports = class Alert
   constructor: (@config) ->
-    @template = Handlebars.compile @config.template if @config.template
+    # Support separate templates for events and metric events
+    {template, metricTemplate} = @config
+    @template = Handlebars.compile template if template
+    @metricTemplate = Handlebars.compile metricTemplate if metricTemplate
 
   renderEvent: (event) ->
     return unless @template
@@ -13,6 +16,11 @@ module.exports = class Alert
     eventString = @renderEvent event
     console.log eventString or event
 
+  renderMetricsEvent: (event) ->
+    return unless @metricTemplate
+
+    @metricTemplate event
+
   sendMetricsEvent: (event) ->
-    eventString = @renderEvent event
+    eventString = @renderMetricsEvent event
     console.log eventString or event

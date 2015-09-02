@@ -29,7 +29,7 @@ module.exports = class SlackAlert extends Alert
     @sendToSlack eventString
 
   sendMetricsEvent: (event) ->
-    eventString = @renderEvent event
+    eventString = @renderMetricsEvent event
     eventString = [
       "Metrics alert for #{event.name}!"
       "```#{JSON.stringify event}```"

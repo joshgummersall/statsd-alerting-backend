@@ -34,7 +34,7 @@ module.exports = class HipChatAlert extends Alert
     @sendToHipChat eventString
 
   sendMetricsEvent: (event) ->
-    eventString = @renderEvent event
+    eventString = @renderMetricsEvent event
     eventString = [
       "Metrics alert for #{event.name}!"
       "```#{JSON.stringify event}```"

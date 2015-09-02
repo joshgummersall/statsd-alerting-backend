@@ -11,6 +11,6 @@ module.exports = class LogAlert extends Alert
     @log eventString
 
   sendMetricsEvent: (event) ->
-    eventString = @renderEvent event
+    eventString = @renderMetricsEvent event
     eventString = "[metrics event]: #{JSON.stringify event}" unless eventString
     @log eventString

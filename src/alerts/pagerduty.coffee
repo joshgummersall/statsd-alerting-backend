@@ -16,6 +16,6 @@ module.exports = class PagerdutyAlert extends Alert
     @sendToPagerduty description, event
 
   sendMetricsEvent: (event) ->
-    description = @renderEvent event
+    description = @renderMetricsEvent event
     description = 'metrics alert' unless description
     @sendToPagerduty description, event
