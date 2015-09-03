@@ -123,7 +123,6 @@ values for whichever alerting sources you specify in your configuration file.
       slackDispatcher: {
         type: "slack",
         config: {
-          host: "<SLACK_HOST>",
           token: "<SLACK_TOKEN>",
           username: "statsd-alerts",
           channel: "#alerts"
