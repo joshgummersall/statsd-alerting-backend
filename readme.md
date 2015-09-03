@@ -158,7 +158,8 @@ values for whichever alerting sources you specify in your configuration file.
           host: "<SLACK_HOST>",
           token: "<SLACK_TOKEN>",
           username: "statsd-alerts",
-          channel: "#alerts"
+          channel: "#alerts",
+          template: "Saw a {{name}} event!"
         }
       },
 
@@ -181,7 +182,8 @@ values for whichever alerting sources you specify in your configuration file.
         config: {
           key: "<HIPCHAT_API_KEY>",
           room: "<HIPCHAT_ROOM_NAME>",
-          color: "red"
+          color: "red",
+          template: "Saw a {{name}} event!"
         }
       },
 
