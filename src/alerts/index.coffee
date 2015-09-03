@@ -3,3 +3,4 @@ module.exports =
   pagerduty: require './pagerduty'
   sentry: require './sentry'
   slack: require './slack'
+  hipchat: require './hipchat'

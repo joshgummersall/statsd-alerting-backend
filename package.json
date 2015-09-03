@@ -1,6 +1,6 @@
 {
   "name": "statsd-alerting-backend",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "A simple StatsD backend to send customizable alerts",
   "keywords": [
     "statsd",
@@ -36,6 +36,7 @@
     "test": "node_modules/.bin/mocha -r coffee-script/register test/**/*_test.coffee"
   },
   "dependencies": {
+    "hipchatter": "^0.2.0",
     "pagerduty": "0.0.3",
     "raven": "^0.6.3",
     "request": "^2.48.0",
