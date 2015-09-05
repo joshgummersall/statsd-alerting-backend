@@ -6,11 +6,7 @@ module.exports = class LogAlert extends Alert
     logFn.apply console, args
 
   sendEvent: (event) ->
-    eventString = @renderEvent event
-    eventString = "[event]: #{JSON.stringify event}" unless eventString
-    @log eventString
+    @log @formatEvent event
 
   sendMetricsEvent: (event) ->
-    eventString = @renderMetricsEvent event
-    eventString = "[metrics event]: #{JSON.stringify event}" unless eventString
-    @log eventString
+    @log @formatMetricsEvent event

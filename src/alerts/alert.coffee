@@ -7,19 +7,37 @@ module.exports = class Alert
     @template = Handlebars.compile template if template
     @metricTemplate = Handlebars.compile metricTemplate if metricTemplate
 
+  defaultEvent: (event) ->
+    eventString = [
+      "Event alert for #{event.name}!"
+      "```#{JSON.stringify event}```"
+    ].join '\n'
+
   renderEvent: (event) ->
     return unless @template
 
     @template event
 
+  formatEvent: (event) ->
+    @renderEvent(event) or @defaultEvent event
+
   sendEvent: (event) ->
     eventString = @renderEvent event
     console.log eventString or event
+
+  defaultMetricsEvent: (event) ->
+    eventString = [
+      "Metrics alert for #{event.name}!"
+      "```#{JSON.stringify event}```"
+    ].join '\n'
 
   renderMetricsEvent: (event) ->
     return unless @metricTemplate
 
     @metricTemplate event
+
+  formatMetricsEvent: (event) ->
+    @renderMetricsEvent(event) or @defaultMetricsEvent event
 
   sendMetricsEvent: (event) ->
     eventString = @renderMetricsEvent event

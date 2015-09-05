@@ -3,19 +3,21 @@ Pagerduty = require 'pagerduty'
 
 module.exports = class PagerdutyAlert extends Alert
   constructor: (@config) ->
+    super
     @pager = new Pagerduty serviceKey: @config.key
-    super @config
 
   sendToPagerduty: (description, event) ->
     {name} = event
     @pager.create {description, incidentKey: name, details: event}
 
+  defaultEvent: ->
+    'event alert'
+
   sendEvent: (event) ->
-    description = @renderEvent event
-    description = 'event alert' unless description
-    @sendToPagerduty description, event
+    @sendToPagerduty @formatEvent(event), event
+
+  defaultMetricsEvent: ->
+    'metrics alert'
 
   sendMetricsEvent: (event) ->
-    description = @renderMetricsEvent event
-    description = 'metrics alert' unless description
-    @sendToPagerduty description, event
+    @sendToPagerduty @formatMetricsEvent(event), event

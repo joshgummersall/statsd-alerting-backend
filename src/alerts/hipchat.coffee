@@ -25,19 +25,7 @@ module.exports = class HipChatAlert extends Alert
       throw new Error "[Hipchat] Couldn't send message to room: #{err}" if err
 
   sendEvent: (event) ->
-    eventString = @renderEvent event
-    eventString = [
-      "Event alert for #{event.name}!"
-      "```#{JSON.stringify event}```"
-    ].join '\n' unless eventString
-
-    @sendToHipChat eventString
+    @sendToHipChat @formatEvent event
 
   sendMetricsEvent: (event) ->
-    eventString = @renderMetricsEvent event
-    eventString = [
-      "Metrics alert for #{event.name}!"
-      "```#{JSON.stringify event}```"
-    ].join '\n' unless eventString
-
-    @sendToHipChat eventString
+    @sendToHipChat @formatMetricsEvent event

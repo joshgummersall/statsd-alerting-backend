@@ -3,7 +3,7 @@ Sentry = require 'raven'
 
 module.exports = class SentryAlert extends Alert
   constructor: (@config) ->
-    super @config
+    super
     @sentry = new Sentry.Client @config.dsn
 
   sendToSentry: (message) ->
@@ -11,19 +11,7 @@ module.exports = class SentryAlert extends Alert
     @sentry.captureMessage message, {level}
 
   sendEvent: (event) ->
-    eventString = @renderEvent event
-    eventString = [
-      "Event alert for #{event.name}!"
-      "```#{JSON.stringify event}```"
-    ].join '\n' unless eventString
-
-    @sendToSentry eventString
+    @sendToSentry @formatEvent event
 
   sendMetricsEvent: (event) ->
-    eventString = @renderMetricsEvent event
-    eventString = [
-      "Metrics alert for #{event.name}!"
-      "```#{JSON.stringify event}```"
-    ].join '\n' unless eventString
-
-    @sendToSentry eventString
+    @sendToSentry @formatMetricsEvent event
