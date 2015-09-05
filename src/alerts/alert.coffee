@@ -22,8 +22,7 @@ module.exports = class Alert
     @renderEvent(event) or @defaultEvent event
 
   sendEvent: (event) ->
-    eventString = @renderEvent event
-    console.log eventString or event
+    console.log @formatEvent event
 
   defaultMetricsEvent: (event) ->
     eventString = [
@@ -40,5 +39,4 @@ module.exports = class Alert
     @renderMetricsEvent(event) or @defaultMetricsEvent event
 
   sendMetricsEvent: (event) ->
-    eventString = @renderMetricsEvent event
-    console.log eventString or event
+    console.log @formatMetricsEvent event
