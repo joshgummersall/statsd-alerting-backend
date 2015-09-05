@@ -3,7 +3,7 @@ Hipchatter = require 'hipchatter'
 
 module.exports = class HipChatAlert extends Alert
   constructor: (@config) ->
-    super @config
+    super
 
     @api = new Hipchatter @config.key
     # Check that the configured room exists, otherwise create it
