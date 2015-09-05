@@ -4,7 +4,7 @@ request = require 'request'
 module.exports = class SlackAlert extends Alert
   sendToSlack: (message) ->
     options =
-      url: "https://hooks.slack.com/services/#{config.token}"
+      url: @config.webhook
       json:
         username: @config.username
         channel: @config.channel
