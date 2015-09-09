@@ -69,6 +69,25 @@ and "log").
 Each dispatcher must also include the necessary configuration for the alert
 dispatcher.
 
+##### Dispatcher Templates
+
+You can specify a template to use for your alert messages if you'd like. If you
+don't specify a template, a sane default will be used for all alerts. Templates
+must be written using [Handlebars.js](http://handlebarsjs.com/) (really only the
+basic templating features are useful here). An example template might look like:
+
+```json
+{
+  "template": "Event alert for {{name}} ({{metric}} {{type}})"
+}
+```
+
+Templates are defined in each dispatcher's configuration block. You can specify
+a template for event alerts (using the `template` property) and for metric
+alerts (using the `metricTemplate` property). The context used when rendering
+templates is the event object itself. Each even contains a `name`, `metric`,
+`type`, and some other metadata.
+
 #### `slack` configuration
 
 List your Slack incoming webhook configuration information. Required keys are
@@ -138,7 +157,8 @@ values for whichever alerting sources you specify in your configuration file.
         config: {
           webhook: "<INCOMING_WEBHOOK>",
           username: "statsd-alerts",
-          channel: "#alerts"
+          channel: "#alerts",
+          template: "Saw a {{name}} event!"
         }
       },
 
@@ -161,7 +181,8 @@ values for whichever alerting sources you specify in your configuration file.
         config: {
           key: "<HIPCHAT_API_KEY>",
           room: "<HIPCHAT_ROOM_NAME>",
-          color: "red"
+          color: "red",
+          template: "Saw a {{name}} event!"
         }
       },
 
