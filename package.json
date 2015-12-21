@@ -13,7 +13,7 @@
     "url": "https://github.com/joshgummersall/statsd-alerting-backend/issues",
     "email": "josh@joshgummersall.me"
   },
-  "license": "ISC",
+  "license": "MIT",
   "author": {
     "name": "Josh Gummersall",
     "email": "josh@joshgummersall.me",
