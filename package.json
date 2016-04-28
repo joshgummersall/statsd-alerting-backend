@@ -1,6 +1,6 @@
 {
   "name": "statsd-alerting-backend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A simple StatsD backend to send customizable alerts",
   "keywords": [
     "statsd",
@@ -38,6 +38,7 @@
   "dependencies": {
     "handlebars": "^4.0.0",
     "hipchatter": "^0.2.0",
+    "nodemailer": "^2.3.2",
     "pagerduty": "0.0.3",
     "raven": "^0.6.3",
     "request": "^2.48.0",

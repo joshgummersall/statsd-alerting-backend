@@ -118,6 +118,24 @@ Make sure that the key provided has enabled the scopes `manage_rooms`
 
 Target, one of `stdout` or `stderr`. Defaults to `stdout`.
 
+#### `email` configuration
+
+You must provide a `transport` key and a `mailOptions` key. See the
+[nodemailer docs](https://github.com/nodemailer/nodemailer#tldr-usage-example)
+for specifics.
+
+`transport` can be a connection string or an object, see examples
+[here](https://github.com/nodemailer/nodemailer#set-up-smtp).
+
+`eventAlertSubject` is the email subject for an event-based alert.
+
+`metricsEventAlertSubject` is the email subject for a metric event-based alert.
+
+`mailOptions` controls how emails are delivered. Valid keys include `from` and
+`to`. The `subject` is filled in using either `eventAlertSubject` or
+`metricsEventAlertSubject`. The `text` will be the formatted event or metrics
+event alert.
+
 #### `events`
 
 Think of this as a list of events (StatsD `counters` or `gauges`) that you want
@@ -190,6 +208,19 @@ values for whichever alerting sources you specify in your configuration file.
         type: "log",
         config: {
           target: "stdout"
+        }
+      },
+
+      emailDispatcher: {
+        type: "email",
+        config: {
+          transport: "smtps://user%40gmail.com:pass@smtp.gmail.com",
+          eventAlertSubject: "Oops! Event Alert",
+          metricsEventAlertSubject: "Oops! Metrics Event Alert",
+          mailOptions: {
+            from: "user@gmail.com",
+            to: "alerts@mycompany.com"
+          }
         }
       }
     },
