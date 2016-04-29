@@ -1,6 +1,6 @@
 {
   "name": "statsd-alerting-backend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A simple StatsD backend to send customizable alerts",
   "keywords": [
     "statsd",
@@ -31,18 +31,21 @@
     "url": "https://gitlab.com/joshgummersall/statsd-alerting-backend.git"
   },
   "scripts": {
-    "prepublish": "gulp compile",
+    "compile": "node_modules/.bin/gulp compile",
     "lint": "node_modules/.bin/gulp lint",
+    "prepublish": "npm run compile",
     "test": "node_modules/.bin/mocha -r coffee-script/register test/**/*_test.coffee"
   },
   "dependencies": {
     "handlebars": "^4.0.0",
     "node-hipchat": "^0.4.5",
+    "nodemailer": "^2.3.2",
     "pagerduty": "0.0.3",
     "raven": "^0.6.3",
     "request": "^2.48.0",
     "underscore": "^1.7.0",
-    "wildcard": "^1.1.0"
+    "wildcard": "^1.1.0",
+    "xoauth2": "^1.1.0"
   },
   "devDependencies": {
     "coffee-script": "^1.8.0",
