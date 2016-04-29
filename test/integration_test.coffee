@@ -21,9 +21,6 @@ describe 'Integration Test', ->
           sentry:
             type: 'sentry'
             config: dsn: ''
-          hipchat:
-            type: 'hipchat'
-            config: {}
         events: eventConfig.events
         metrics: eventConfig.metrics
 
@@ -69,19 +66,15 @@ describe 'Integration Test', ->
         ,
           name: 'test.sentry.event'
           dispatcher: 'sentry'
-        ,
-          name: 'test.hipchat.event'
-          dispatcher: 'hipchat'
         ]
 
-      @dispatchesEvents 'slack', 'pagerduty', 'log', 'sentry', 'hipchat'
+      @dispatchesEvents 'slack', 'pagerduty', 'log', 'sentry'
 
       @packet [
         'test.slack.event:1|c'
         'test.pagerduty.event:1|c'
         'test.log.event:1|c'
         'test.sentry.event:1|c'
-        'test.hipchat.event:1|c'
       ].join '\n'
 
       @verifyMocks()
@@ -102,21 +95,16 @@ describe 'Integration Test', ->
           name: 'test.sentry.event'
           gte: 5
           dispatcher: 'sentry'
-        ,
-          name: 'test.hipchat.event'
-          gte: 2
-          dispatcher: 'hipchat'
         ]
 
       @dispatchesEvents 'slack', 'pagerduty'
-      @noEventsDispatchedFor 'log', 'sentry', 'hipchat'
+      @noEventsDispatchedFor 'log', 'sentry'
 
       @packet [
         'test.slack.event:1|c'
         'test.pagerduty.event:1|c'
         'test.log.event:1|c'
         'test.sentry.event:1|c'
-        'test.hipchat.event:1|c'
       ].join '\n'
 
       @verifyMocks()
@@ -168,11 +156,6 @@ describe 'Integration Test', ->
           key: 'mean_90'
           delta_lt: 10
           dispatcher: 'log'
-        ,
-          name: 'test.hipchat.metric'
-          type: 'counter_rates'
-          gte: 0.2
-          dispatcher: 'hipchat'
         ]
 
       # This is gross. Sorry.
@@ -186,7 +169,6 @@ describe 'Integration Test', ->
       @flush
         counter_rates:
           'test.slack.metric': 0.4
-          'test.hipchat.metric': 0.6
         timer_data:
           'test.pagerduty.metric':
             mean_90: 9

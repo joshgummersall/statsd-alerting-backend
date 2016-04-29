@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "handlebars": "^4.0.0",
-    "hipchatter": "^0.2.0",
+    "node-hipchat": "^0.4.5",
     "pagerduty": "0.0.3",
     "raven": "^0.6.3",
     "request": "^2.48.0",

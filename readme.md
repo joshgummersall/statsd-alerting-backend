@@ -104,15 +104,10 @@ Simply list your Sentry DSN.
 
 #### `hipchat` configuration
 
-List your hipchat api `key` and the `room` name to which you want to send the
-alerts. If a room with that name does not exist, then the backend will create
-it for you. Optionally you can also set a `color` for the messages sent to
-hipchat. Available colors are yellow (default), red, green, purple,
-gray and random.
+List your Hipchat API `key` and the `room` name to which you want to send the
+alerts. Optionally include a `from` description and a `notify` boolean.
 
-Make sure that the key provided has enabled the scopes `manage_rooms`
-(necessary for the backend to create the room in case it doesn't exist),
-`view_room` and `send_notification`.
+Make sure that the key provided has enabled the scope `send_notification`.
 
 #### `log` configuration
 
@@ -180,8 +175,10 @@ values for whichever alerting sources you specify in your configuration file.
         type: "hipchat",
         config: {
           key: "<HIPCHAT_API_KEY>",
+          from: "statsd-hipchat-alerts".
           room: "<HIPCHAT_ROOM_NAME>",
           color: "red",
+          notify: true,
           template: "Saw a {{name}} event!"
         }
       },
