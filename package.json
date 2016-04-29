@@ -1,6 +1,6 @@
 {
   "name": "statsd-alerting-backend",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "A simple StatsD backend to send customizable alerts",
   "keywords": [
     "statsd",
