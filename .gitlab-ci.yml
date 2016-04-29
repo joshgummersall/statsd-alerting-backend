@@ -1,0 +1,13 @@
+image: node:5
+
+before_script:
+  - npm install
+
+compile:
+  script: "npm run compile"
+
+lint:
+  script: "npm run lint"
+
+test:
+  script: "npm test"
