@@ -7,12 +7,12 @@ module.exports = class EmailAlert extends Alert
   constructor: (@config) ->
     super
 
-    # Gmail supports XOAUTH2 which is preferable to SMPT based auth. If the
-    # config specifies XOAUTH2 let's handle that specially.
+    # Support XOAUTH2 configuration via `service` and `xoauth2` keys
     if @config.xoauth2
-      xoauth2 = Xoauth2.createXOAuth2Generator @config.xoauth2
-      @transport = NodeMailer.createTransport _.extend {}, @config.transport,
-        auth: {xoauth2}
+      @transport = NodeMailer.createTransport
+        service: @config.service
+        auth:
+          xoauth2: Xoauth2.createXOAuth2Generator @config.xoauth2
     else
       @transport = NodeMailer.createTransport @config.transport
 

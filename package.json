@@ -31,7 +31,7 @@
     "url": "https://gitlab.com/joshgummersall/statsd-alerting-backend.git"
   },
   "scripts": {
-    "prepublish": "gulp compile",
+    "prepublish": "node_modules/.bin/gulp compile",
     "lint": "node_modules/.bin/gulp lint",
     "test": "node_modules/.bin/mocha -r coffee-script/register test/**/*_test.coffee"
   },
