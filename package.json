@@ -8,9 +8,9 @@
     "slack",
     "email"
   ],
-  "homepage": "https://gitlab.com/joshgummersall/statsd-alerting-backend",
+  "homepage": "https://github.com/joshgummersall/statsd-alerting-backend",
   "bugs": {
-    "url": "https://gitlab.com/joshgummersall/statsd-alerting-backend/issues",
+    "url": "https://github.com/joshgummersall/statsd-alerting-backend/issues",
     "email": "josh@joshgummersall.me"
   },
   "license": "MIT",
@@ -28,7 +28,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/joshgummersall/statsd-alerting-backend.git"
+    "url": "https://github.com/joshgummersall/statsd-alerting-backend.git"
   },
   "scripts": {
     "compile": "node_modules/.bin/gulp compile",

@@ -145,7 +145,7 @@ Think of this as a list of aggregate metrics you want to alert on. Typical uses
 for this would be alerting when an average time is greater than a set value or
 when the rate of counter exceeds some value. You could also alert when the
 difference (or `delta`) of a current metric and its previous value exceeds a
-certain value. See the [integration test](https://gitlab.com/joshgummersall/statsd-alerting-backend/blob/master/test/integration_test.coffee)
+certain value. See the [integration test](https://github.com/joshgummersall/statsd-alerting-backend/blob/master/test/integration_test.coffee)
 for more information on how to use these alerts. You can also use wildcards
 in the metrics name for matching. A wildcard will match any events of a specific
 type (i.e. `timer_data` or `counter_rates`).
@@ -245,6 +245,6 @@ values for whichever alerting sources you specify in your configuration file.
 
 ## Contributing
 
-Feel free to [leave issues here](https://gitlab.com/joshgummersall/statsd-alerting-backend/issues)
+Feel free to [leave issues here](https://github.com/joshgummersall/statsd-alerting-backend/issues)
 or fork the project and submit pull requests. If there is a feature you would like added
 just submit an issue describing the feature and I will do my best.
