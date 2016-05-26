@@ -35,6 +35,30 @@ module.exports = class AlertDistributor
     for name, {type, config} of @config.dispatchers when type of Alerts
       @dispatchers[name] = new Alerts[type] config
 
+    # Build any custom dispatchers include in the config file
+    for name, custom of @config.customDispatchers or {} when custom
+      # We need one of these things defined, skip if both are missing
+      unless custom.module or custom.constructor
+        throw new Error "`#{name}` missing `module` or `constructor` key"
+
+      {config} = custom
+      config or= {}
+
+      # Allow consumers to specify either a constructor function (created with
+      # `new`) or a pre-constructed module that has the proper shape.
+      instance = if custom.constructor
+        new custom.constructor config
+      else
+        _.extend {config}, custom.module
+
+      # Ensure instance has the proper things defined for use in the library
+      for fnName in ['sendEvent', 'sendMetricsEvent']
+        unless _.isFunction instance[fnName]
+          throw new Error "`#{name}` custom module missing `#{fnName}` function"
+
+      # Things look okay, so include this instance and carry on
+      @dispatchers[name] = instance
+
   dispatchEvent: (name, event) ->
     throw new Error "#{name} is not a valid events alert dispatcher" \
       unless name of @dispatchers
