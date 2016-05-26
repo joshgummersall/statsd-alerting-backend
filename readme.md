@@ -243,6 +243,96 @@ values for whichever alerting sources you specify in your configuration file.
 }
 ```
 
+#### Custom Dispatchers
+
+The configuration format and specification for StatsD is such that you can
+include and execute arbitrary Javascript. When you start running StatsD, you
+execute:
+
+```bash
+$ node stats.js config.js
+```
+
+Under the hood, StatsD reads `config.js` and runs it through `eval`, assigning
+the evaluated contents of `config.js` to a `config` variable. While `eval` is
+often considered harmful, it provides extreme flexibility for end users which
+you can leverage by way of defining custom dispatchers!
+
+[See the relevant bit of code here](https://github.com/etsy/statsd/blob/master/lib/config.js#L15).
+
+In the configuration sample above, many of the dispatchers include a `type` key
+that must map to one of the pre-defined dispatchers included with this library.
+Now you can define either a `class` or `module` key that can be completely
+custom. An example configuration (`config.js` file) could be:
+
+```js
+{
+  ...
+  alerts: {
+    dispatchers: {
+      customModule: {
+        config: {},
+        module: {
+          sendEvent: function (event) {
+            // DO ANYTHING HERE!!!
+          },
+
+          sendMetricsEvent: function (event) {
+            // DO ANYTHING HERE!!!
+          }
+        }
+      }
+    },
+    ...
+  }
+  ...
+}
+```
+
+Or, perhaps you have the following code in a file, `dispatcher.js`:
+
+```js
+var Alert = require('statsd-alerting-backend/lib/alerts/alert.js');
+var util = require('util');
+
+function SomeDispatcher(config) {
+  Alert.apply(this, arguments);
+}
+
+SomeDispatcher.prototype.sendEvent = function (event) {
+  // DO MORE COMPLEX THING HERE!
+}
+
+SomeDispatcher.prototype.sendMetricsEvent = function (event) {
+  // DO MORE COMPLEX THING HERE!
+}
+
+util.inherits(SomeDispatcher, Alert);
+
+module.exports = SomeDispatcher;
+```
+
+Your `config.js` file would look like:
+
+```js
+{
+  ...
+  alerts: {
+    dispatchers: {
+      customClass: {
+        config: {},
+        class: require('./dispatcher.js')
+      }
+    },
+    ...
+  }
+  ...
+}
+```
+
+Pretty powerful! You no longer need to fork the repository, develop a
+dispatcher, submit a pull request, etc. just to use a custom dispatcher.
+
 ## Contributing
 
 Feel free to [leave issues here](https://github.com/joshgummersall/statsd-alerting-backend/issues)
